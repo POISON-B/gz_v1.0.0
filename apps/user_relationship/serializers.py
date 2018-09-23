@@ -78,7 +78,6 @@ class UserChapterEndInfoSerializer(serializers.ModelSerializer):
     任务线序列化
     """
     chapter = ChapterSerializers()
-    # course = CourseSerializers()
 
     class Meta:
         model = UserChapter
@@ -122,16 +121,11 @@ class UserPracticeSerializer(serializers.Serializer):
             chapter = validated_data["chapter"]
             practice = validated_data["practice"]
             types = validated_data["types"]
-            practice_info = base64.b64encode(validated_data['practice_info'].encode('utf-8')).decode('utf8')
+            practice_info = base64.b64encode(validated_data['practice_info'].encode('utf-8'))
 
-            print(practice_info)
-            return_practice_info = base64.b64decode(practice_info).decode('utf8')
-            print(return_practice_info)
-            results = compile_results['output'] if compile_results['errors'] is None else compile_results['errors']
-
-            print(results)
+            results = compile_results['output'] if compile_results['errors'] == '' else compile_results['errors']
             validated_data = {"user": user, "chapter": chapter, "practice": practice, "types": types,
-                              "practice_info": return_practice_info, "results": results}
+                              "practice_info": practice_info, "results": results}
             existed = UserPractice.objects.create(**validated_data)
 
             return existed
