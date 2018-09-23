@@ -32,7 +32,7 @@ class UserChapterAdmin(object):
 
 
 class UserPracticeAdmin(object):
-    list_display = ['user', 'chapter', 'practice', 'types', 'end_time', 'practice_info']
+    list_display = ['user', 'chapter', 'practice', 'types', 'end_time', 'practice_info', 'results']
     search_fields = ['user', 'chapter', 'practice', 'types', 'practice_info']
     list_filter = ['user', 'chapter', 'practice', 'types', 'end_time', 'practice_info']
 #    readonly_fields = ['user', 'chapter', 'practice', 'start_time', 'end_time', 'practice_info', 'count']

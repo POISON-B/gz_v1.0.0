@@ -23,7 +23,6 @@ from rest_framework_jwt.views import obtain_jwt_token
 from django.views.generic import TemplateView
 
 
-
 from apps.major.views import *
 from apps.user_relationship.views import *
 from apps.users.views import *
@@ -200,12 +199,3 @@ urlpatterns = [
     url(r'^ueditor/', include('DjangoUeditor.urls')),
     url(r'^media/(?P<path>.*)/$', serve, {'document_root': MEDIA_ROOT}),  # 资源文件加载地址
 ]
-
-# if DEBUG:
-#     from django.conf.urls.static import static
-#     urlpatterns += static(
-#         MEDIA_URL, document_root=MEDIA_ROOT)
-# else:
-#     urlpatterns = [
-#         url(r'^static/(?P<path>.*)/$', serve, {'document_root': STATIC_ROOT}),  # 静态文件加载地址
-#     ]

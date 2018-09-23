@@ -13,16 +13,12 @@ class Major(models.Model):
     CATEGORY_TYPE = (
         (1, "一级类目"),
         (2, "二级类目"),
-    #     (3, "三级类目"),
     )
 
     name = models.CharField(default="", max_length=30, verbose_name="类别名", help_text="类别名")
     category_type = models.IntegerField(choices=CATEGORY_TYPE, verbose_name="类目级别", help_text="类目级别")
     parent_category = models.ForeignKey("self", null=True, blank=True, verbose_name="父类目级别", help_text="父目录",
                                         related_name="sub_cat", default="self")
-    # courses = models.ForeignKey(Course, verbose_name='课程', null=True, blank=True)
-    # course_task = models.CharField(max_length=255, null=True, blank=True, verbose_name='内容介绍')
-    # image = models.ImageField(upload_to="course/images/", null=True, blank=True, verbose_name="封面图")
     add_time = models.DateTimeField(default=timezone.now, verbose_name="添加时间")
 
     class Meta:
@@ -100,7 +96,7 @@ class Practice(models.Model):
         (1, "选择练习题"),
         (2, "判断练习题"),
         (3, "填空练习题"),
-        (4, "编程练习题")
+        (4, "编程练习题"),
         (4, "编程练习题"),
         (5, "打字练习题"),
     )
@@ -124,28 +120,6 @@ class Practice(models.Model):
         return self.practice_name
 
 
-
-# class TimeLimitPractice(Practice):
-#
-#     class Meta:
-#         verbose_name = '限时练习题'
-#         verbose_name_plural = verbose_name
-#
-#
-# class SpeedPractice(Practice):
-#
-#     class Meta:
-#         verbose_name = '速度练习题'
-#         verbose_name_plural = verbose_name
-#
-#
-# class ProgrammingPractice(Practice):
-#
-#     class Meta:
-#         verbose_name = '编程题'
-#         verbose_name_plural = verbose_name
-
-
 class ChapterTask(models.Model):
     """
     章节任务
@@ -153,9 +127,6 @@ class ChapterTask(models.Model):
     chapter_name = models.ForeignKey(Chapter, verbose_name='章节')
     name = models.CharField(max_length=255, verbose_name='任务名')
     info = models.TextField(verbose_name='任务介绍')
-    # file_data = models.FileField(upload_to='/task/file/', max_length=1000, null=True, blank=True, verbose_name='上传文件')
-    # image = models.ImageField(upload_to="task/images/", null=True, blank=True, verbose_name="任务截图")
-    # hostip = models.URLField(verbose_name='主机地址')
     add_time = models.DateTimeField(default=timezone.now, verbose_name="添加时间")
 
     class Meta:

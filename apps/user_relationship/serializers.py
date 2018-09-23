@@ -103,60 +103,70 @@ class UserPracticeSerializer(serializers.Serializer):
 
     practice_info = serializers.CharField(allow_blank=True, label='练习答案', help_text='练习题提交答案')
 
+    results = serializers.CharField(allow_blank=True, default=None, label='批改答案', help_text='批改答案')
+
 #  需要修改
     def create(self, validated_data):
+        import requests
+        import json
+        import base64
         chapter_id = validated_data['chapter'].id
         _type = validated_data['types']
-        practice_answer = Practice.objects.filter(chapter_name=chapter_id, _type=_type).all()
-        answer = dict()
-        return_answer = dict()
-        value = json.loads(validated_data['practice_info'])
-        for practice in practice_answer:
-            answer[practice.id] = practice.standard_answer
-        print(answer)
-        print(value)
-        for k, v in answer.items():
-            if v == value[str(k)]:
-                return_answer[k] = True
-            else:
-                return_answer[k] = False
-        print(return_answer)
-        user = self.context["request"].user
-        chapter = validated_data["chapter"]
-        practice = validated_data["practice"]
-        types = validated_data["types"]
-        practice_info = [value, return_answer]
+        if _type == 4:
+            url = 'https://m.runoob.com/api/compile.php'
+            payload = {"code": validated_data['practice_info'], "stdin": None, "language": 8,
+                       "fileext": "java"}
+            r = requests.post(url, data=payload)
+            compile_results = r.json()
+            user = self.context["request"].user
+            chapter = validated_data["chapter"]
+            practice = validated_data["practice"]
+            types = validated_data["types"]
+            practice_info = base64.b64encode(validated_data['practice_info'].encode('utf-8')).decode('utf8')
 
-        validated_data = {"user": user, "chapter": chapter, "practice": practice, "types": types, "practice_info": practice_info}
-        existed = UserPractice.objects.create(**validated_data)
+            print(practice_info)
+            return_practice_info = base64.b64decode(practice_info).decode('utf8')
+            print(return_practice_info)
+            results = compile_results['output'] if compile_results['errors'] is None else compile_results['errors']
 
-        return existed
+            print(results)
+            validated_data = {"user": user, "chapter": chapter, "practice": practice, "types": types,
+                              "practice_info": return_practice_info, "results": results}
+            existed = UserPractice.objects.create(**validated_data)
 
-        #
-        # existed = UserPractice.objects.filter(user=user, practice=practice)
-        #
-        # if existed:
-        #     existed = existed[0]
-        #     existed.count += 1
-        #     existed.save()
-        # else:
-        #     existed = UserPractice.objects.create(**validated_data)
-        #
-        # return existed
+            return existed
+
+        else:
+            practice_answer = Practice.objects.filter(chapter_name=chapter_id, _type=_type).all()
+            answer = dict()
+            return_answer = dict()
+            value = json.loads(validated_data['practice_info'])
+            for practice in practice_answer:
+                answer[practice.id] = practice.standard_answer
+            print(answer)
+            print(value)
+            for k, v in answer.items():
+                if v == value[str(k)]:
+                    return_answer[k] = True
+                else:
+                    return_answer[k] = False
+            print(return_answer)
+            user = self.context["request"].user
+            chapter = validated_data["chapter"]
+            practice = validated_data["practice"]
+            types = validated_data["types"]
+            practice_info = [value]
+            results = return_answer
+
+            validated_data = {"user": user, "chapter": chapter, "practice": practice,
+                              "types": types, "practice_info": practice_info, 'results': results}
+            existed = UserPractice.objects.create(**validated_data)
+
+            return existed
 
     class Meta:
         model = UserPractice
-        fields = ('user', 'chapter', 'practice', 'practice_info', 'count')
-
-
-class A(object):
-    def __init__(self, value, user):
-        self.num = value
-        self.user = user
-
-
-class Test(serializers.Serializer):
-    num = serializers.IntegerField()
+        fields = ('user', 'chapter', 'practice', 'practice_info', 'results')
 
 
 class UserResultsSerializers(serializers.ModelSerializer):

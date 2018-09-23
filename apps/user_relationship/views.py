@@ -64,10 +64,8 @@ class UserPracticeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
 
-
     def get_queryset(self):
         return UserPractice.objects.filter(user_id=self.request.user)
-
 
 
 # class UserPracticeViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
@@ -92,7 +90,7 @@ class UserResultsView(View):
     """
 
     def get(self, request):
-        info_dict =dict()
+        info_dict = dict()
         if request.user.is_authenticated:
             results = UserAchievement.objects.filter(user=self.request.user)
             chapter = UserChapter.objects.filter(user=self.request.user).order_by('-end_time')[0]
